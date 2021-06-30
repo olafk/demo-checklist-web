@@ -4,6 +4,7 @@ import com.liferay.portal.kernel.portlet.bridges.mvc.MVCPortlet;
 import com.liferay.portal.kernel.theme.ThemeDisplay;
 import com.liferay.portal.kernel.util.WebKeys;
 import com.liferay.portal.search.engine.adapter.SearchEngineAdapter;
+import com.liferay.portal.search.index.IndexNameBuilder;
 import com.liferay.sales.checklist.ChecklistItem;
 import com.liferay.sales.checklist.DemoChecklistUtil;
 import com.liferay.sales.checklist.constants.DemoChecklistPortletKeys;
@@ -53,8 +54,24 @@ public class DemoChecklistPortlet extends MVCPortlet {
 	
 	@Reference
 	public void setSearchEngineAdapter(SearchEngineAdapter searchEngineAdapter) {
-		this.demoChecklistUtil = new DemoChecklistUtil(searchEngineAdapter);
+		this.searchEngineAdapter = searchEngineAdapter;
+		initDemoChecklistUtil();
 	}
+	
+	@Reference
+	public void setIndexNameBuilder(IndexNameBuilder indexNameBuilder) {
+		this.indexNameBuilder = indexNameBuilder;
+		initDemoChecklistUtil();
+	}
+
+	private void initDemoChecklistUtil() {
+		if(this.searchEngineAdapter != null && this.indexNameBuilder != null) {
+			this.demoChecklistUtil = new DemoChecklistUtil(searchEngineAdapter, indexNameBuilder);
+		}
+	}
+	
+	private IndexNameBuilder indexNameBuilder;
+	private SearchEngineAdapter searchEngineAdapter;
 	
 	DemoChecklistUtil demoChecklistUtil;
 	

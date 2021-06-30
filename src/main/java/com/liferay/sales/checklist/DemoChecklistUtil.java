@@ -11,6 +11,7 @@ import com.liferay.portal.kernel.theme.ThemeDisplay;
 import com.liferay.portal.search.engine.adapter.SearchEngineAdapter;
 import com.liferay.portal.search.engine.adapter.search.CountSearchRequest;
 import com.liferay.portal.search.engine.adapter.search.CountSearchResponse;
+import com.liferay.portal.search.index.IndexNameBuilder;
 import com.liferay.portal.util.PropsValues;
 
 import java.util.ArrayList;
@@ -29,9 +30,11 @@ import java.util.List;
 public class DemoChecklistUtil {
 
 	private SearchEngineAdapter searchEngineAdapter;
+	private IndexNameBuilder indexNameBuilder;
 
-	public DemoChecklistUtil(SearchEngineAdapter searchEngineAdapter) {
+	public DemoChecklistUtil(SearchEngineAdapter searchEngineAdapter, IndexNameBuilder indexNameBuilder) {
 		this.searchEngineAdapter = searchEngineAdapter;
+		this.indexNameBuilder = indexNameBuilder;
 	}
 
 	public List<ChecklistItem> getChecklist(ThemeDisplay themeDisplay) {
@@ -48,7 +51,7 @@ public class DemoChecklistUtil {
 	private ChecklistItem checkIndex(ThemeDisplay themeDisplay) {
 
 		CountSearchRequest countSearchRequest = new CountSearchRequest();
-		countSearchRequest.setIndexNames("liferay-" + themeDisplay.getCompanyId());
+		countSearchRequest.setIndexNames(indexNameBuilder.getIndexName(themeDisplay.getCompanyId()));
 		TermQuery termQuery = new TermQueryImpl(
 			Field.ENTRY_CLASS_NAME, User.class.getName());
 
