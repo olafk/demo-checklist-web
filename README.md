@@ -7,3 +7,7 @@ To ease the sharing of demos, here's a quick checklist. It's implemented as Widg
 If you have your own policy or an extended checklist, and would like to contribute: Go ahead: This plugin is meant to share Best Practices, and soft-enforce them by pointing them out.
 
 ![Screenshot](demo-checklist-web-illustration.png) 
+
+## Build-instructions
+
+This plugin has been built within a Liferay Workspace, configured for Target Platform 7.3.10 but only tested on DXP 7.3 SP1
