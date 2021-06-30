@@ -49,21 +49,28 @@ public class DemoChecklistUtil {
 	}
 	
 	private ChecklistItem checkIndex(ThemeDisplay themeDisplay) {
-
-		CountSearchRequest countSearchRequest = new CountSearchRequest();
-		countSearchRequest.setIndexNames(indexNameBuilder.getIndexName(themeDisplay.getCompanyId()));
-		TermQuery termQuery = new TermQueryImpl(
-			Field.ENTRY_CLASS_NAME, User.class.getName());
-
-		countSearchRequest.setQuery(termQuery);
-		CountSearchResponse countSearchResponse =
-			searchEngineAdapter.execute(countSearchRequest);
-		Long count = Long.valueOf(countSearchResponse.getCount());
-		boolean exists = count > 0;
-		ChecklistItem result = new ChecklistItem(exists, "index", 
-				"/group/control_panel/manage?p_p_id=com_liferay_portal_search_admin_web_portlet_SearchAdminPortlet&_com_liferay_portal_search_admin_web_portlet_SearchAdminPortlet_tabs1=index-actions", 
-				""+count);
-		return result;
+		try {
+			CountSearchRequest countSearchRequest = new CountSearchRequest();
+			countSearchRequest.setIndexNames(indexNameBuilder.getIndexName(themeDisplay.getCompanyId()));
+			TermQuery termQuery = new TermQueryImpl(
+				Field.ENTRY_CLASS_NAME, User.class.getName());
+	
+			countSearchRequest.setQuery(termQuery);
+			CountSearchResponse countSearchResponse =
+				searchEngineAdapter.execute(countSearchRequest);
+			Long count = Long.valueOf(countSearchResponse.getCount());
+			boolean exists = count > 0;
+			ChecklistItem result = new ChecklistItem(exists, "index", 
+					"/group/control_panel/manage?p_p_id=com_liferay_portal_search_admin_web_portlet_SearchAdminPortlet&_com_liferay_portal_search_admin_web_portlet_SearchAdminPortlet_tabs1=index-actions", 
+					""+count);
+			return result;
+		} catch(Exception e) {
+			ChecklistItem result = new ChecklistItem(false, "index", 
+					"/group/control_panel/manage?p_p_id=com_liferay_portal_search_admin_web_portlet_SearchAdminPortlet&_com_liferay_portal_search_admin_web_portlet_SearchAdminPortlet_tabs1=index-actions", 
+					e.getMessage());
+			e.printStackTrace();
+			return result;
+		}
 	}
 	
 	private ChecklistItem checkVirtualHost(ThemeDisplay themeDisplay) {
@@ -94,7 +101,7 @@ public class DemoChecklistUtil {
 			boolean changeRequired = passwordPolicy.getChangeRequired();
 			return new ChecklistItem(!changeRequired, "password-policy-change-required", "/group/guest/~/control_panel/manage?p_p_id=com_liferay_password_policies_admin_web_portlet_PasswordPoliciesAdminPortlet&p_p_lifecycle=0&_com_liferay_password_policies_admin_web_portlet_PasswordPoliciesAdminPortlet_mvcPath=%2Fedit_password_policy.jsp&_com_liferay_password_policies_admin_web_portlet_PasswordPoliciesAdminPortlet_passwordPolicyId=" + passwordPolicy.getPasswordPolicyId());
 		} catch (PortalException e) {
-			return new ChecklistItem(false, "password-policy-change-required", "http://localhost:8080/group/guest/~/control_panel/manage?p_p_id=com_liferay_password_policies_admin_web_portlet_PasswordPoliciesAdminPortlet", e.getClass() + " " + e.getMessage());
+			return new ChecklistItem(false, "password-policy-change-required", "/group/guest/~/control_panel/manage?p_p_id=com_liferay_password_policies_admin_web_portlet_PasswordPoliciesAdminPortlet", e.getClass() + " " + e.getMessage());
 		}
 	}
 }
