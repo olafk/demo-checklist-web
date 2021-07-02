@@ -5,13 +5,12 @@ import com.liferay.portal.kernel.language.LanguageUtil;
 import com.liferay.portal.kernel.theme.ThemeDisplay;
 import com.liferay.portal.kernel.util.ResourceBundleUtil;
 import com.liferay.portal.kernel.util.WebKeys;
-import com.liferay.portal.search.engine.adapter.SearchEngineAdapter;
-import com.liferay.portal.search.index.IndexNameBuilder;
 import com.liferay.product.navigation.control.menu.BaseJSPProductNavigationControlMenuEntry;
 import com.liferay.product.navigation.control.menu.ProductNavigationControlMenuEntry;
 import com.liferay.product.navigation.control.menu.constants.ProductNavigationControlMenuCategoryKeys;
-import com.liferay.sales.checklist.ChecklistItem;
-import com.liferay.sales.checklist.DemoChecklistUtil;
+import com.liferay.sales.checklist.api.ChecklistItem;
+import com.liferay.sales.checklist.api.ChecklistProvider;
+import com.liferay.sales.checklist.portlet.ChecklistChecker;
 
 import java.util.List;
 import java.util.Locale;
@@ -22,6 +21,8 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
+import org.osgi.service.component.annotations.ReferenceCardinality;
+import org.osgi.service.component.annotations.ReferencePolicyOption;
 
 /**
  * This ControlMenuEntry is only shown when "something is wrong" in the 
@@ -62,7 +63,7 @@ public class DemoChecklistMenuItem
 	@Override
 	public boolean isShow(HttpServletRequest request) throws PortalException {
 		ThemeDisplay themeDisplay = (ThemeDisplay) request.getAttribute(WebKeys.THEME_DISPLAY);
-		List<ChecklistItem> checklist = demoChecklistUtil.getChecklist(themeDisplay);
+		List<ChecklistItem> checklist = checker.check(themeDisplay);
 		boolean allResolved = true;
 		for (ChecklistItem checklistItem : checklist) {
 			allResolved &= checklistItem.isResolved();
@@ -79,25 +80,18 @@ public class DemoChecklistMenuItem
 		super.setServletContext(servletContext);
 	}
 	
-	@Reference
-	public void setSearchEngineAdapter(SearchEngineAdapter searchEngineAdapter) {
-		this.searchEngineAdapter = searchEngineAdapter;
-		initDemoChecklistUtil();
+	@Reference( 
+			cardinality = ReferenceCardinality.MULTIPLE,
+		    policyOption = ReferencePolicyOption.GREEDY,
+		    unbind = "doUnRegister" 
+	)
+	void doRegister(ChecklistProvider checklistProvider) {
+		checker.doRegister(checklistProvider);
 	}
 	
-	@Reference
-	public void setIndexNameBuilder(IndexNameBuilder indexNameBuilder) {
-		this.indexNameBuilder = indexNameBuilder;
-		initDemoChecklistUtil();
-	}
-
-	private void initDemoChecklistUtil() {
-		if(this.searchEngineAdapter != null && this.indexNameBuilder != null) {
-			this.demoChecklistUtil = new DemoChecklistUtil(searchEngineAdapter, indexNameBuilder);
-		}
+	void doUnRegister(ChecklistProvider checklistProvider) {
+		checker.doUnRegister(checklistProvider);
 	}
 	
-	private IndexNameBuilder indexNameBuilder;
-	private SearchEngineAdapter searchEngineAdapter;
-	DemoChecklistUtil demoChecklistUtil;
+	private ChecklistChecker checker = new ChecklistChecker();
 }

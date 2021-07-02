@@ -1,4 +1,4 @@
-<%@page import="com.liferay.sales.checklist.ChecklistItem"%>
+<%@page import="com.liferay.sales.checklist.api.ChecklistItem"%>
 <%@page import="java.util.List"%>
 <%@ include file="init.jsp" %>
 

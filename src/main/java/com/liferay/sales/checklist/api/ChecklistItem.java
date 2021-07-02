@@ -1,4 +1,4 @@
-package com.liferay.sales.checklist;
+package com.liferay.sales.checklist.api;
 
 public class ChecklistItem {
 	public ChecklistItem(boolean resolved, String name, String link, String ... info) {

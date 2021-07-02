@@ -3,10 +3,8 @@ package com.liferay.sales.checklist.portlet;
 import com.liferay.portal.kernel.portlet.bridges.mvc.MVCPortlet;
 import com.liferay.portal.kernel.theme.ThemeDisplay;
 import com.liferay.portal.kernel.util.WebKeys;
-import com.liferay.portal.search.engine.adapter.SearchEngineAdapter;
-import com.liferay.portal.search.index.IndexNameBuilder;
-import com.liferay.sales.checklist.ChecklistItem;
-import com.liferay.sales.checklist.DemoChecklistUtil;
+import com.liferay.sales.checklist.api.ChecklistItem;
+import com.liferay.sales.checklist.api.ChecklistProvider;
 import com.liferay.sales.checklist.constants.DemoChecklistPortletKeys;
 
 import java.io.IOException;
@@ -19,6 +17,8 @@ import javax.portlet.RenderResponse;
 
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
+import org.osgi.service.component.annotations.ReferenceCardinality;
+import org.osgi.service.component.annotations.ReferencePolicyOption;
 
 /**
  * @author olaf
@@ -46,33 +46,24 @@ public class DemoChecklistPortlet extends MVCPortlet {
 			throws IOException, PortletException {
 		ThemeDisplay themeDisplay = (ThemeDisplay) renderRequest.getAttribute(WebKeys.THEME_DISPLAY);
 
-		List<ChecklistItem> checklist = demoChecklistUtil.getChecklist(themeDisplay);
+		List<ChecklistItem> checklist = checker.check(themeDisplay);
 		renderRequest.setAttribute("checklist", checklist);
 		
 		super.doView(renderRequest, renderResponse);
 	}
 	
-	@Reference
-	public void setSearchEngineAdapter(SearchEngineAdapter searchEngineAdapter) {
-		this.searchEngineAdapter = searchEngineAdapter;
-		initDemoChecklistUtil();
+	@Reference( 
+			cardinality = ReferenceCardinality.MULTIPLE,
+		    policyOption = ReferencePolicyOption.GREEDY,
+		    unbind = "doUnRegister" 
+	)
+	void doRegister(ChecklistProvider checklistProvider) {
+		checker.doRegister(checklistProvider);
 	}
 	
-	@Reference
-	public void setIndexNameBuilder(IndexNameBuilder indexNameBuilder) {
-		this.indexNameBuilder = indexNameBuilder;
-		initDemoChecklistUtil();
+	void doUnRegister(ChecklistProvider checklistProvider) {
+		checker.doUnRegister(checklistProvider);
 	}
 
-	private void initDemoChecklistUtil() {
-		if(this.searchEngineAdapter != null && this.indexNameBuilder != null) {
-			this.demoChecklistUtil = new DemoChecklistUtil(searchEngineAdapter, indexNameBuilder);
-		}
-	}
-	
-	private IndexNameBuilder indexNameBuilder;
-	private SearchEngineAdapter searchEngineAdapter;
-	
-	DemoChecklistUtil demoChecklistUtil;
-	
+	private ChecklistChecker checker = new ChecklistChecker();
 }
