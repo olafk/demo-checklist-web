@@ -3,7 +3,6 @@ package com.liferay.sales.checklist.impl;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.model.PasswordPolicy;
 import com.liferay.portal.kernel.service.PasswordPolicyLocalService;
-import com.liferay.portal.kernel.service.PasswordPolicyLocalServiceUtil;
 import com.liferay.portal.kernel.theme.ThemeDisplay;
 import com.liferay.sales.checklist.api.ChecklistItem;
 import com.liferay.sales.checklist.api.ChecklistProvider;
