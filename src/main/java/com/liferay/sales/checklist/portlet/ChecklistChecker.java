@@ -12,7 +12,12 @@ public class ChecklistChecker {
 	public List<ChecklistItem> check(ThemeDisplay themeDisplay) {
 		LinkedList<ChecklistItem> result = new LinkedList<ChecklistItem>();
 		for (ChecklistProvider provider : providers) {
-			result.add(provider.check(themeDisplay));
+			try {
+				result.add(provider.check(themeDisplay));
+			} catch (Exception e) {
+				result.add(new ChecklistItem(false, "failed-checklist-item", null, 
+						e.getClass().getName() + " " + e.getMessage() + " " + " from " + provider.getClass().getName()));
+			}
 		}
 		return result;
 	}
