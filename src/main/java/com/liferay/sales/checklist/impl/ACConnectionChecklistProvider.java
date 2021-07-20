@@ -16,7 +16,7 @@ public class ACConnectionChecklistProvider implements ChecklistProvider {
 		try {
 			analyticsMessageSenderClient.validateConnection(themeDisplay.getCompanyId());
 			return new ChecklistItem(true, "analytics-cloud", null);
-		}catch (Exception e) {
+		} catch (Exception e) {
 			return new ChecklistItem(false, "analytics-cloud", null, e.getClass().getName() + " " + e.getMessage());
 		}
 	}
