@@ -1,6 +1,6 @@
 Bundle-Name: demo-checklist-web
 Bundle-SymbolicName: com.liferay.sales.checklist
-Bundle-Version: 1.0.3
+Bundle-Version: 1.0.4-SNAPSHOT
 Export-Package: com.liferay.sales.checklist.constants,com.liferay.sales.checklist.api
 Web-ContextPath:/demo-checklist-web
 -dsannotations-options: inherit
