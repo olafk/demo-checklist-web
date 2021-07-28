@@ -23,10 +23,12 @@ taglib uri="http://liferay.com/tld/portlet" prefix="liferay-portlet" %>
 LiferayPortletURL modalPortletURL = PortletURLFactoryUtil.create(request, DemoChecklistPortletKeys.DEMOCHECKLIST, 
 		LayoutLocalServiceUtil.getDefaultPlid(scopeGroupId), PortletRequest.RENDER_PHASE);
 modalPortletURL.setWindowState(LiferayWindowState.POP_UP);
+boolean allResolved = (boolean) request.getAttribute("checklist-all-resolved");
+String clayIcon = allResolved ? "check":"warning";
 %>
 
 <li class="control-menu-nav-item">
 <a href="javascript:Liferay.Util.openModal({title:'<%= HtmlUtil.escapeJS(LanguageUtil.format(resourceBundle, "inconsistencies-in-demo-configuration", null)) %>', url:'<%=modalPortletURL %>'});" 
    class="control-menu-icon icon-monospaced lfr-portal-tooltip"
-   data-title="<%= HtmlUtil.escapeAttribute(LanguageUtil.format(resourceBundle, "inconsistencies-in-demo-configuration", null)) %>"><clay:icon symbol="warning"/></a>
+   data-title="<%= HtmlUtil.escapeAttribute(LanguageUtil.format(resourceBundle, "inconsistencies-in-demo-configuration", null)) %>"><clay:icon symbol="<%=clayIcon %>"/></a>
 </li>

@@ -1,7 +1,9 @@
 package com.liferay.sales.checklist.controlmenu;
 
+import com.liferay.portal.configuration.metatype.bnd.util.ConfigurableUtil;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.language.LanguageUtil;
+import com.liferay.portal.kernel.module.configuration.ConfigurationProvider;
 import com.liferay.portal.kernel.theme.ThemeDisplay;
 import com.liferay.portal.kernel.util.ResourceBundleUtil;
 import com.liferay.portal.kernel.util.WebKeys;
@@ -10,16 +12,20 @@ import com.liferay.product.navigation.control.menu.ProductNavigationControlMenuE
 import com.liferay.product.navigation.control.menu.constants.ProductNavigationControlMenuCategoryKeys;
 import com.liferay.sales.checklist.api.ChecklistItem;
 import com.liferay.sales.checklist.api.ChecklistProvider;
+import com.liferay.sales.checklist.impl.ChecklistConfiguration;
 import com.liferay.sales.checklist.portlet.ChecklistChecker;
 
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.ResourceBundle;
 
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 
+import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Modified;
 import org.osgi.service.component.annotations.Reference;
 import org.osgi.service.component.annotations.ReferenceCardinality;
 import org.osgi.service.component.annotations.ReferencePolicyOption;
@@ -33,6 +39,7 @@ import org.osgi.service.component.annotations.ReferencePolicyOption;
 
 @Component(
 		immediate = true,
+		configurationPid = "com.liferay.sales.checklist.impl.ChecklistConfiguration",
 		property = {
 			"product.navigation.control.menu.category.key=" + ProductNavigationControlMenuCategoryKeys.USER,
 			"product.navigation.control.menu.entry.order:Integer=1"
@@ -68,7 +75,8 @@ public class DemoChecklistMenuItem
 		for (ChecklistItem checklistItem : checklist) {
 			allResolved &= checklistItem.isResolved();
 		}
-		return !allResolved;
+		request.setAttribute("checklist-all-resolved", allResolved);
+		return (!allResolved)||config.showAlways();
 	}
 	
 	@Override
@@ -93,5 +101,22 @@ public class DemoChecklistMenuItem
 		checker.doUnRegister(checklistProvider);
 	}
 	
+
+	@Reference
+	protected void setConfigurationProvider(ConfigurationProvider configurationProvider) {
+	    // configuration update will actually be handled in the @Modified event,
+		// which will only be triggered in case we have a @Reference to the 
+		// ConfigurationProvider
+	}
+	
+	@Activate
+	@Modified
+	protected void activate(Map<String, Object> properties) {
+		config = ConfigurableUtil.createConfigurable(ChecklistConfiguration.class, 
+				properties);
+	}
+
+	private volatile ChecklistConfiguration config;
+
 	private ChecklistChecker checker = new ChecklistChecker();
 }
