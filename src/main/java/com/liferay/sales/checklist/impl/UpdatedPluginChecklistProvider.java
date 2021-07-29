@@ -11,23 +11,42 @@ import com.liferay.sales.checklist.api.ChecklistItem;
 import com.liferay.sales.checklist.api.ChecklistProvider;
 import com.liferay.sales.checklist.impl.dto.Release;
 
+import java.util.Date;
 import java.util.Map;
 
+import org.osgi.framework.Version;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Modified;
 import org.osgi.service.component.annotations.Reference;
 
+/**
+ * Using the github release api to determine latest version 
+ * This "current version" assumption can be configured: The configuration's default value is manually set 
+ * upon release to the corresponding github version. When configuration is saved, this might go out of date. 
+ * Configuration is used to give the user an option to override the check for update for a particular version.
+ * E.g. if you're running version 1.0.4 and you're not interested in running version 1.0.5: Just configure your
+ * current instance to be 1.0.5 and you'll only be notified once 1.0.6, 1.1 or 2.0 is out. Set to a much 
+ * larger value to disable for the foreseeable future.
+ * 
+ * @author Olaf Kock
+ */
 
 @Component(
 		configurationPid = "com.liferay.sales.checklist.impl.ChecklistConfiguration"
 	)
 public class UpdatedPluginChecklistProvider implements ChecklistProvider {
 
-	private static final String CP_URL = "/group/control_panel/manage?p_p_id=com_liferay_configuration_admin_web_portlet_SystemSettingsPortlet&p_p_lifecycle=0&p_p_state=maximized&p_p_mode=view&_com_liferay_configuration_admin_web_portlet_SystemSettingsPortlet_factoryPid=com.liferay.sales.checklist.impl.ChecklistConfiguration&_com_liferay_configuration_admin_web_portlet_SystemSettingsPortlet_mvcRenderCommandName=%2Fconfiguration_admin%2Fedit_configuration&_com_liferay_configuration_admin_web_portlet_SystemSettingsPortlet_pid=com.liferay.sales.checklist.impl.ChecklistConfiguration";
-
 	@Override
 	public ChecklistItem check(ThemeDisplay themeDisplay) {
+		Date now = new Date();
+		long oneHourAgo = (now.getTime()-(60L*60L*1000L));
+		if(lastResult != null && lastCheck.getTime() > oneHourAgo) {
+			// only check every hour: Remote connections can be costly (paid in time)
+			log.info("skipping updated version check for demo checklist within one hour past the last check");
+			return lastResult;
+		}
+
 		try {
 			String json = null;
 			try {
@@ -35,17 +54,22 @@ public class UpdatedPluginChecklistProvider implements ChecklistProvider {
 				json = HttpUtil.URLtoString(location);
 				log.info("read " + json.length() + " release information from " + location);
 			} catch (Exception e) {
-				return new ChecklistItem(false, "updated-version-available", e.getClass().getName() + " " + e.getMessage());
+				String msg = e.getClass().getName() + " " + e.getMessage();
+				return new ChecklistItem(false, "updated-version-available", CP_URL, msg, msg);
 			}
 			Release[] releases = null;
 			releases = JSONFactoryUtil.looseDeserialize(json, Release[].class);
-			String maxReleasedVersion = "";
+			Version maxReleasedVersion = new Version(0,0,0);
 			for (int i = 0; i < releases.length; i++) {
-				if(releases[i].tag_name.compareTo(maxReleasedVersion) > 0)
-					maxReleasedVersion = releases[i].tag_name;
+				Version githubVersion = new Version(releases[i].tag_name);
+				
+				if(githubVersion.compareTo(maxReleasedVersion) > 0)
+					maxReleasedVersion = githubVersion;
 			}
-			boolean result = maxReleasedVersion.compareTo(config.updatedVersionCheck()) <= 0;
-			return new ChecklistItem(result, "updated-version-available", CP_URL, maxReleasedVersion, config.updatedVersionCheck());
+			boolean result = maxReleasedVersion.compareTo(new Version(config.updatedVersionCheck())) <= 0;
+			lastResult = new ChecklistItem(result, "updated-version-available", CP_URL, maxReleasedVersion.toString(), config.updatedVersionCheck());
+			lastCheck = now;
+			return lastResult;
 		} catch (Exception e) {
 			return new ChecklistItem(false, "updated-version-available", CP_URL, e.getClass().getName() + " " + e.getMessage(), config.updatedVersionCheck() );
 		}
@@ -63,9 +87,15 @@ public class UpdatedPluginChecklistProvider implements ChecklistProvider {
 	protected void activate(Map<String, Object> properties) {
 		config = ConfigurableUtil.createConfigurable(ChecklistConfiguration.class, 
 				properties);
+		lastCheck = new Date(0);
+		lastResult = null;
 	}
-
+	
+	private Date lastCheck;
+	private ChecklistItem lastResult;
 	private volatile ChecklistConfiguration config;
 
-	public static final Log log = LogFactoryUtil.getLog(UpdatedPluginChecklistProvider.class);
+	private static final Log log = LogFactoryUtil.getLog(UpdatedPluginChecklistProvider.class);
+	private static final String CP_URL = "/group/control_panel/manage?p_p_id=com_liferay_configuration_admin_web_portlet_SystemSettingsPortlet&p_p_lifecycle=0&p_p_state=maximized&p_p_mode=view&_com_liferay_configuration_admin_web_portlet_SystemSettingsPortlet_factoryPid=com.liferay.sales.checklist.impl.ChecklistConfiguration&_com_liferay_configuration_admin_web_portlet_SystemSettingsPortlet_mvcRenderCommandName=%2Fconfiguration_admin%2Fedit_configuration&_com_liferay_configuration_admin_web_portlet_SystemSettingsPortlet_pid=com.liferay.sales.checklist.impl.ChecklistConfiguration";
+
 }
