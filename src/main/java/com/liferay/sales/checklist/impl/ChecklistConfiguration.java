@@ -9,7 +9,11 @@ import aQute.bnd.annotation.metatype.Meta;
 	    , description = "config-sales-checklist-description"
 	)
 public interface ChecklistConfiguration {
-	
+	/**
+	 * Claim to be of the configured version. This default value is manually set to the 
+	 * corresponding github release.
+	 * @return
+	 */
 	@Meta.AD(
             deflt = "1.0.4",
             description = "config-updated-version-check-description",
