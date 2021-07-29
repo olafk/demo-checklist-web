@@ -30,5 +30,5 @@ String clayIcon = allResolved ? "check":"warning";
 <li class="control-menu-nav-item">
 <a href="javascript:Liferay.Util.openModal({title:'<%= HtmlUtil.escapeJS(LanguageUtil.format(resourceBundle, "inconsistencies-in-demo-configuration", null)) %>', url:'<%=modalPortletURL %>'});" 
    class="control-menu-icon icon-monospaced lfr-portal-tooltip"
-   data-title="<%= HtmlUtil.escapeAttribute(LanguageUtil.format(resourceBundle, "inconsistencies-in-demo-configuration", null)) %>"><clay:icon symbol="<%=clayIcon %>"/></a>
+   data-title="<%= HtmlUtil.escapeAttribute(LanguageUtil.format(resourceBundle, "demochecklist.caption", null)) %>"><clay:icon symbol="<%=clayIcon %>"/></a>
 </li>
