@@ -15,7 +15,7 @@ public interface ChecklistConfiguration {
 	 * @return
 	 */
 	@Meta.AD(
-            deflt = "1.0.4",
+            deflt = "1.0.6",
             description = "config-updated-version-check-description",
             name = "config-updated-version-check-name",
             required = false
