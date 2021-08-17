@@ -1,3 +1,4 @@
+<%@page import="com.liferay.sales.checklist.impl.UpdatedPluginChecklistProvider"%>
 <%@page import="com.liferay.sales.checklist.api.ChecklistItem"%>
 <%@page import="java.util.List"%>
 <%@ include file="init.jsp" %>
@@ -21,4 +22,6 @@
 <p>
 	<liferay-ui:message key="contribution-link"/>
 </p>
-
+<p>
+	<liferay-ui:message key="configure-this-plugin" arguments="<%=UpdatedPluginChecklistProvider.CP_URL %>"/>
+</p>
