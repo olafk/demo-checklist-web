@@ -3,7 +3,7 @@ Bundle-SymbolicName: com.liferay.sales.checklist
 # **************************************************************
 # remember to update the deflt value in ChecklistConfiguration! 
 # any time you update the bundle version and release!
-Bundle-Version: 1.0.8-SNAPSHOT
+Bundle-Version: 1.0.8
 # **************************************************************
 Export-Package: com.liferay.sales.checklist.constants,com.liferay.sales.checklist.api
 Web-ContextPath:/demo-checklist-web
