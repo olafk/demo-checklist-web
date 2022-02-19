@@ -32,3 +32,4 @@ String clayIcon = allResolved ? "check":"warning";
    class="control-menu-icon icon-monospaced lfr-portal-tooltip"
    data-title="<%= HtmlUtil.escapeAttribute(LanguageUtil.format(resourceBundle, "demochecklist.caption", null)) %>"><clay:icon symbol="<%=clayIcon %>"/></a>
 </li>
+

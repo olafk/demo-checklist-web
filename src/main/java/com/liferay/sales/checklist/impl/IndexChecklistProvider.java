@@ -10,6 +10,7 @@ import com.liferay.portal.search.engine.adapter.SearchEngineAdapter;
 import com.liferay.portal.search.engine.adapter.search.CountSearchRequest;
 import com.liferay.portal.search.engine.adapter.search.CountSearchResponse;
 import com.liferay.portal.search.index.IndexNameBuilder;
+import com.liferay.sales.checklist.api.BaseChecklistProviderImpl;
 import com.liferay.sales.checklist.api.ChecklistItem;
 import com.liferay.sales.checklist.api.ChecklistProvider;
 
@@ -18,8 +19,15 @@ import java.util.List;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 
-@Component
-public class IndexChecklistProvider implements ChecklistProvider {
+@Component( 
+		service = ChecklistProvider.class 
+)
+
+public class IndexChecklistProvider extends BaseChecklistProviderImpl implements ChecklistProvider {
+
+	private static final String LINK = "/group/control_panel/manage?p_p_id=com_liferay_portal_search_admin_web_portlet_SearchAdminPortlet&_com_liferay_portal_search_admin_web_portlet_SearchAdminPortlet_tabs1=index-actions";
+
+	private static final String MSG = "index";
 
 	@Override
 	public ChecklistItem check(ThemeDisplay themeDisplay) {
@@ -37,16 +45,9 @@ public class IndexChecklistProvider implements ChecklistProvider {
 			long dbCount = companyUsers.size();
 			
 			boolean exists = (indexCount >= dbCount); // "larger than or equals" for the rare demo system with more than 200 users
-			ChecklistItem result = new ChecklistItem(exists, "index", 
-					"/group/control_panel/manage?p_p_id=com_liferay_portal_search_admin_web_portlet_SearchAdminPortlet&_com_liferay_portal_search_admin_web_portlet_SearchAdminPortlet_tabs1=index-actions", 
-					""+indexCount, ""+dbCount);
-			return result;
+			return create(exists, themeDisplay.getLocale(), LINK, MSG, ""+indexCount, ""+dbCount);
 		} catch(Exception e) {
-			ChecklistItem result = new ChecklistItem(false, "index", 
-					"/group/control_panel/manage?p_p_id=com_liferay_portal_search_admin_web_portlet_SearchAdminPortlet&_com_liferay_portal_search_admin_web_portlet_SearchAdminPortlet_tabs1=index-actions", 
-					e.getMessage());
-			e.printStackTrace();
-			return result;
+			return create(false, themeDisplay.getLocale(), LINK, MSG, e.getMessage());
 		}
 	}
 	

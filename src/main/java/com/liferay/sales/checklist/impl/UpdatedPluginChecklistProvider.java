@@ -7,6 +7,7 @@ import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.module.configuration.ConfigurationProvider;
 import com.liferay.portal.kernel.theme.ThemeDisplay;
 import com.liferay.portal.kernel.util.HttpUtil;
+import com.liferay.sales.checklist.api.BaseChecklistProviderImpl;
 import com.liferay.sales.checklist.api.ChecklistItem;
 import com.liferay.sales.checklist.api.ChecklistProvider;
 import com.liferay.sales.checklist.impl.dto.Release;
@@ -33,10 +34,12 @@ import org.osgi.service.component.annotations.Reference;
  */
 
 @Component(
-		configurationPid = "com.liferay.sales.checklist.impl.ChecklistConfiguration"
+		configurationPid = "com.liferay.sales.checklist.impl.ChecklistConfiguration",
+		service = ChecklistProvider.class
 	)
-public class UpdatedPluginChecklistProvider implements ChecklistProvider {
+public class UpdatedPluginChecklistProvider extends BaseChecklistProviderImpl implements ChecklistProvider {
 
+	private static final String MSG = "updated-version-available";
 	@Override
 	public ChecklistItem check(ThemeDisplay themeDisplay) {
 		Date now = new Date();
@@ -55,7 +58,7 @@ public class UpdatedPluginChecklistProvider implements ChecklistProvider {
 				log.info("read " + json.length() + " release information from " + location);
 			} catch (Exception e) {
 				String msg = e.getClass().getName() + " " + e.getMessage();
-				return new ChecklistItem(false, "updated-version-available", CP_URL, msg, msg);
+				return create(false, themeDisplay.getLocale(), LINK, MSG, msg, msg); 
 			}
 			Release[] releases = null;
 			releases = JSONFactoryUtil.looseDeserialize(json, Release[].class);
@@ -67,11 +70,11 @@ public class UpdatedPluginChecklistProvider implements ChecklistProvider {
 					maxReleasedVersion = githubVersion;
 			}
 			boolean result = maxReleasedVersion.compareTo(new Version(config.updatedVersionCheck())) <= 0;
-			lastResult = new ChecklistItem(result, "updated-version-available", CP_URL, maxReleasedVersion.toString(), config.updatedVersionCheck());
+			lastResult = create(result,themeDisplay.getLocale(), LINK, MSG, maxReleasedVersion.toString(), config.updatedVersionCheck());
 			lastCheck = now;
 			return lastResult;
 		} catch (Exception e) {
-			return new ChecklistItem(false, "updated-version-available", CP_URL, e.getClass().getName() + " " + e.getMessage(), config.updatedVersionCheck() );
+			return create(false, themeDisplay.getLocale(), LINK, MSG, e.getClass().getName() + " " + e.getMessage(), config.updatedVersionCheck());
 		}
 	}
 
@@ -96,6 +99,6 @@ public class UpdatedPluginChecklistProvider implements ChecklistProvider {
 	private volatile ChecklistConfiguration config;
 
 	private static final Log log = LogFactoryUtil.getLog(UpdatedPluginChecklistProvider.class);
-	public static final String CP_URL = "/group/control_panel/manage?p_p_id=com_liferay_configuration_admin_web_portlet_SystemSettingsPortlet&p_p_lifecycle=0&p_p_state=maximized&p_p_mode=view&_com_liferay_configuration_admin_web_portlet_SystemSettingsPortlet_factoryPid=com.liferay.sales.checklist.impl.ChecklistConfiguration&_com_liferay_configuration_admin_web_portlet_SystemSettingsPortlet_mvcRenderCommandName=%2Fconfiguration_admin%2Fedit_configuration&_com_liferay_configuration_admin_web_portlet_SystemSettingsPortlet_pid=com.liferay.sales.checklist.impl.ChecklistConfiguration";
+	public static final String LINK = "/group/control_panel/manage?p_p_id=com_liferay_configuration_admin_web_portlet_SystemSettingsPortlet&p_p_lifecycle=0&p_p_state=maximized&p_p_mode=view&_com_liferay_configuration_admin_web_portlet_SystemSettingsPortlet_factoryPid=com.liferay.sales.checklist.impl.ChecklistConfiguration&_com_liferay_configuration_admin_web_portlet_SystemSettingsPortlet_mvcRenderCommandName=%2Fconfiguration_admin%2Fedit_configuration&_com_liferay_configuration_admin_web_portlet_SystemSettingsPortlet_pid=com.liferay.sales.checklist.impl.ChecklistConfiguration";
 
 }
