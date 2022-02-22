@@ -14,7 +14,7 @@
 		<liferay-ui:icon image="checked"/> <c:out value="${item.message}"/>
 	</c:if>
 	<c:if test="${!item.resolved}">
-		<liferay-ui:icon image="unchecked"/> <c:out value="${item.message}"/>
+		<liferay-ui:icon image="unchecked"/> <c:out value="${item.message}" escapeXml="false"/>
 		<a href="${item.link}" data-senna-off="true" target="_top" class="btn btn-primary" style="margin-left:1em;"><liferay-ui:message key="fix-it"/></a>
 	</c:if>
 	<br/>
