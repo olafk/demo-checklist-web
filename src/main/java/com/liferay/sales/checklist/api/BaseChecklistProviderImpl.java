@@ -19,4 +19,11 @@ public abstract class BaseChecklistProviderImpl implements ChecklistProvider {
 		String message = ResourceBundleUtil.getString(bundle, prefix+msgKey, info);
 		return new ChecklistItem(state, message, link);
 	}
+	
+	public ChecklistItem create(Locale locale, Throwable throwable) {
+		ResourceBundle bundle = ResourceBundleUtil.getBundle(locale, BaseChecklistProviderImpl.class);
+		String message = ResourceBundleUtil.getString(bundle, "exception-notification-for-checklist", this.getClass().getName(), 
+				throwable.getClass().getName() + " " + throwable.getMessage());
+		return new ChecklistItem(false, message, null);
+	}
 }
