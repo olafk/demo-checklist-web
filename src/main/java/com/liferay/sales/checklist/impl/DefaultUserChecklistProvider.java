@@ -1,5 +1,6 @@
 package com.liferay.sales.checklist.impl;
 
+import com.liferay.portal.kernel.exception.NoSuchUserException;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.model.User;
 import com.liferay.portal.kernel.security.pwd.PasswordEncryptorUtil;
@@ -29,6 +30,8 @@ public class DefaultUserChecklistProvider extends BaseChecklistProviderImpl impl
 				String hashedPassword = PasswordEncryptorUtil.encrypt("test", user.getPassword());
 				return create(! user.getPassword().equals(hashedPassword), themeDisplay.getLocale(), LINK, MSG);
 			}
+		} catch (NoSuchUserException e) {
+			// ignore - this is great and exactly what we're after.
 		} catch (PortalException e) {
 			return create(themeDisplay.getLocale(), e);
 		}
