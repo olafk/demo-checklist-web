@@ -1,5 +1,6 @@
 dependencies {
     compileOnly group: "com.liferay.portal", name: "release.dxp.api"
+    compile group: "biz.aQute.bnd", name: "biz.aQute.bndlib", version: "3.1.0"
 
 	compileOnly group: "javax.portlet", name: "portlet-api"
 	compileOnly group: "javax.servlet", name: "javax.servlet-api"
