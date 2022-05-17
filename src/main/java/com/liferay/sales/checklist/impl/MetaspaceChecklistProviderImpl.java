@@ -22,11 +22,6 @@ public class MetaspaceChecklistProviderImpl extends BaseChecklistProviderImpl im
 	public ChecklistItem check(ThemeDisplay themeDisplay) {
 		for (MemoryPoolMXBean memoryMXBean : ManagementFactory.getMemoryPoolMXBeans()) {
 		    if ("Metaspace".equals(memoryMXBean.getName())) {
-		            System.out.println(memoryMXBean.getUsage().getUsed()/1024/1024 + " mb");
-		    }
-		}
-		for (MemoryPoolMXBean memoryMXBean : ManagementFactory.getMemoryPoolMXBeans()) {
-		    if ("Metaspace".equals(memoryMXBean.getName())) {
 		            long maxMetaspace = memoryMXBean.getUsage().getMax();
 		            return create(maxMetaspace>=768*1024*1024, themeDisplay.getLocale(), LINK, MSG, maxMetaspace);
 		    }
