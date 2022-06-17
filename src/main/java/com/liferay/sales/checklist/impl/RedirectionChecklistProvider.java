@@ -1,6 +1,7 @@
 package com.liferay.sales.checklist.impl;
 
-import com.liferay.configuration.admin.constants.ConfigurationAdminPortletKeys;
+import static com.liferay.configuration.admin.constants.ConfigurationAdminPortletKeys.INSTANCE_SETTINGS;
+
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.theme.ThemeDisplay;
@@ -21,8 +22,6 @@ import org.osgi.framework.Constants;
 import org.osgi.service.cm.ConfigurationException;
 import org.osgi.service.cm.ManagedServiceFactory;
 import org.osgi.service.component.annotations.Component;
-
-import static com.liferay.configuration.admin.constants.ConfigurationAdminPortletKeys.INSTANCE_SETTINGS;
 
 @Component(
 		immediate = true,
