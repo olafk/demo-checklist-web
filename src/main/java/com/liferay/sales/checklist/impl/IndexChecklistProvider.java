@@ -31,24 +31,20 @@ public class IndexChecklistProvider extends BaseChecklistProviderImpl implements
 
 	@Override
 	public ChecklistItem check(ThemeDisplay themeDisplay) {
-		try {
-			CountSearchRequest countSearchRequest = new CountSearchRequest();
-			countSearchRequest.setIndexNames(indexNameBuilder.getIndexName(themeDisplay.getCompanyId()));
-			TermQuery termQuery = new TermQueryImpl(
-				Field.ENTRY_CLASS_NAME, User.class.getName());
-	
-			countSearchRequest.setQuery(termQuery);
-			CountSearchResponse countSearchResponse =
-				searchEngineAdapter.execute(countSearchRequest);
-			long indexCount = countSearchResponse.getCount();
-			List<User> companyUsers = userLocalService.getCompanyUsers(themeDisplay.getCompanyId(), 0, 200);
-			long dbCount = companyUsers.size();
-			
-			boolean exists = (indexCount >= dbCount); // "larger than or equals" for the rare demo system with more than 200 users
-			return create(exists, themeDisplay.getLocale(), LINK, MSG, ""+indexCount, ""+dbCount);
-		} catch(Exception e) {
-			return create(false, themeDisplay.getLocale(), LINK, MSG, e.getMessage());
-		}
+		CountSearchRequest countSearchRequest = new CountSearchRequest();
+		countSearchRequest.setIndexNames(indexNameBuilder.getIndexName(themeDisplay.getCompanyId()));
+		TermQuery termQuery = new TermQueryImpl(
+			Field.ENTRY_CLASS_NAME, User.class.getName());
+
+		countSearchRequest.setQuery(termQuery);
+		CountSearchResponse countSearchResponse =
+			searchEngineAdapter.execute(countSearchRequest);
+		long indexCount = countSearchResponse.getCount();
+		List<User> companyUsers = userLocalService.getCompanyUsers(themeDisplay.getCompanyId(), 0, 200);
+		long dbCount = companyUsers.size();
+		
+		boolean exists = (indexCount >= dbCount); // "larger than or equals" for the rare demo system with more than 200 users
+		return create(exists, themeDisplay.getLocale(), LINK, MSG, indexCount, dbCount);
 	}
 	
 	@Reference
