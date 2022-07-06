@@ -15,7 +15,7 @@ public interface ChecklistConfiguration {
 	 * @return
 	 */
 	@Meta.AD(
-            deflt = "1.1.4",
+            deflt = "1.1.5",
             description = "config-updated-version-check-description",
             name = "config-updated-version-check-name",
             required = false
@@ -24,14 +24,13 @@ public interface ChecklistConfiguration {
 	public String updatedVersionCheck();
 	
 	@Meta.AD(
-            deflt = "false",
-            description = "config-show-always-description",
-            name = "config-show-always-name",
+            deflt = "0",
+            description = "config-show-when-more-than-description",
+            name = "config-show-when-more-than-name",
             required = false
         )
 
-	public boolean showAlways();
-
+	public int showWhenMoreThan();
 }
 
 

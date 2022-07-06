@@ -71,12 +71,14 @@ public class DemoChecklistMenuItem
 	public boolean isShow(HttpServletRequest request) throws PortalException {
 		ThemeDisplay themeDisplay = (ThemeDisplay) request.getAttribute(WebKeys.THEME_DISPLAY);
 		List<ChecklistItem> checklist = checker.check(themeDisplay);
-		boolean allResolved = true;
+		int unresolved = 0;
 		for (ChecklistItem checklistItem : checklist) {
-			allResolved &= checklistItem.isResolved();
+			if(!checklistItem.isResolved()) {
+				unresolved++;
+			}
 		}
-		request.setAttribute("checklist-all-resolved", allResolved);
-		return (!allResolved)||config.showAlways();
+		request.setAttribute("checklist-all-resolved", unresolved==0); // determines symbol when shown: checkmark or warning sign
+		return (unresolved > config.showWhenMoreThan()); // determines if anything is shown at all
 	}
 	
 	@Override
