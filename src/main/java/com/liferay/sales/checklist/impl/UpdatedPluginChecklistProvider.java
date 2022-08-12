@@ -40,6 +40,7 @@ import org.osgi.service.component.annotations.Reference;
 public class UpdatedPluginChecklistProvider extends BaseChecklistProviderImpl implements ChecklistProvider {
 
 	private static final String MSG = "updated-version-available";
+	private static final String MSG_NOT_CHECKED = "updated-version-available-unchecked";
 	@Override
 	public ChecklistItem check(ThemeDisplay themeDisplay) {
 		Date now = new Date();
@@ -56,9 +57,9 @@ public class UpdatedPluginChecklistProvider extends BaseChecklistProviderImpl im
 				String location = "https://api.github.com/repos/olafk/demo-checklist-web/releases";
 				json = HttpUtil.URLtoString(location);
 				log.info("read " + json.length() + " release information from " + location);
-			} catch (Exception e) {
+			} catch (Exception e) {  
 				String msg = e.getClass().getName() + " " + e.getMessage();
-				return create(false, themeDisplay.getLocale(), LINK, MSG, msg, msg); 
+				return create(true, themeDisplay.getLocale(), LINK, MSG_NOT_CHECKED, msg, msg); 
 			}
 			Release[] releases = null;
 			releases = JSONFactoryUtil.looseDeserialize(json, Release[].class);
