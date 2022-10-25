@@ -29,6 +29,4 @@ public class MetaspaceChecklistProviderImpl extends BaseChecklistProviderImpl im
 		
         return create(false, themeDisplay.getLocale(), LINK, MSG, "undetected");
 	}
-
-
 }
