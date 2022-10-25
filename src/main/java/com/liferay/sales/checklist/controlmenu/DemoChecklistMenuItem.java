@@ -81,13 +81,17 @@ public class DemoChecklistMenuItem
 		return (unresolved > config.showWhenMoreThan()); // determines if anything is shown at all
 	}
 	
-	@Override
 	@Reference(
 		target = "(osgi.web.symbolicname=com.liferay.sales.checklist)",
 		unbind = "-"
 	)
 	public void setServletContext(ServletContext servletContext) {
-		super.setServletContext(servletContext);
+		this.servletContext = servletContext;
+	}
+	
+	@Override
+	protected ServletContext getServletContext() {
+		return servletContext;
 	}
 	
 	@Reference( 
@@ -119,6 +123,7 @@ public class DemoChecklistMenuItem
 	}
 
 	private volatile ChecklistConfiguration config;
+	private ServletContext servletContext;
 
 	private ChecklistChecker checker = new ChecklistChecker();
 }
