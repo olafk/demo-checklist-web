@@ -3,8 +3,8 @@ package com.liferay.sales.checklist.impl;
 import com.liferay.portal.kernel.model.Company;
 import com.liferay.portal.kernel.theme.ThemeDisplay;
 import com.liferay.portal.kernel.util.GetterUtil;
+import com.liferay.portal.kernel.util.PrefsPropsUtil;
 import com.liferay.portal.kernel.util.PropsKeys;
-import com.liferay.portal.util.PrefsPropsUtil;
 import com.liferay.portal.util.PropsUtil;
 import com.liferay.portal.util.PropsValues;
 import com.liferay.sales.checklist.api.BaseChecklistProviderImpl;
@@ -26,7 +26,7 @@ public class MailLoginChecklistProvider extends BaseChecklistProviderImpl implem
 	@Override
 	public ChecklistItem check(ThemeDisplay themeDisplay) {
 		PortletPreferences preferences = PrefsPropsUtil.getPreferences(
-				themeDisplay.getCompanyId(), true);
+				themeDisplay.getCompanyId());
 
 		boolean prepopulate = _getPrefsPropsBoolean(
 				preferences, themeDisplay.getCompany(), PropsKeys.COMPANY_LOGIN_PREPOPULATE_DOMAIN,
